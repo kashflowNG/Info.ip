@@ -1,75 +1,92 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>My IP & Device Info (Dark Mode)</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      background: #121212;
-      color: #f1f1f1;
-      padding: 30px;
+      background-color: #121212;
+      color: #ffffff;
       margin: 0;
+      padding: 40px 20px;
     }
-    .box {
-      background: #1e1e1e;
-      border-radius: 10px;
-      padding: 25px;
+
+    .container {
       max-width: 600px;
       margin: auto;
-      box-shadow: 0 0 10px rgba(0,0,0,0.5);
+      background: #1e1e1e;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 0 12px rgba(0, 0, 0, 0.6);
     }
-    h2 {
+
+    h1 {
       text-align: center;
       color: #00bcd4;
-      margin-bottom: 20px;
+      margin-bottom: 30px;
     }
+
     .info {
-      margin-bottom: 12px;
+      margin: 15px 0;
     }
+
     .label {
       font-weight: bold;
       color: #cccccc;
     }
+
     hr {
-      border: none;
-      border-top: 1px solid #333;
-      margin: 20px 0;
+      border: 0;
+      height: 1px;
+      background: #333;
+      margin: 25px 0;
+    }
+
+    @media screen and (max-width: 600px) {
+      body {
+        padding: 20px 10px;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="box">
-    <h2>My IP & Device Info</h2>
+  <div class="container">
+    <h1>My IP & Device Info</h1>
+
     <div class="info"><span class="label">IP Address:</span> <span id="ip">Loading...</span></div>
     <div class="info"><span class="label">City:</span> <span id="city"></span></div>
     <div class="info"><span class="label">Country:</span> <span id="country"></span></div>
     <div class="info"><span class="label">ISP:</span> <span id="isp"></span></div>
-    <hr>
-    <div class="info"><span class="label">Browser:</span> <span id="browser"></span></div>
+
+    <hr />
+
+    <div class="info"><span class="label">Device:</span> <span id="device"></span></div>
     <div class="info"><span class="label">Operating System:</span> <span id="os"></span></div>
+    <div class="info"><span class="label">Browser:</span> <span id="browser"></span></div>
     <div class="info"><span class="label">Screen Resolution:</span> <span id="screen"></span></div>
   </div>
 
   <script>
-    // IP & Location fetch
+    // Fetch IP and location info from ipapi.co
     fetch('https://ipapi.co/json/')
       .then(res => res.json())
       .then(data => {
         document.getElementById('ip').textContent = data.ip;
         document.getElementById('city').textContent = data.city;
         document.getElementById('country').textContent = `${data.country_name} (${data.country_code})`;
-        document.getElementById('isp').textContent = data.org;
+        document.getElementById('isp').textContent = data.org || 'Unavailable';
       })
       .catch(() => {
-        document.getElementById('ip').textContent = 'Could not fetch';
+        document.getElementById('ip').textContent = 'Could not fetch IP';
       });
 
-    // Device info
     const ua = navigator.userAgent;
     const platform = navigator.platform;
     const screenSize = `${screen.width} x ${screen.height}`;
 
+    // Browser detection
     function getBrowser() {
       if (ua.includes("Firefox")) return "Firefox";
       if (ua.includes("Edg")) return "Microsoft Edge";
@@ -79,6 +96,7 @@
       return "Unknown";
     }
 
+    // Operating system detection
     function getOS() {
       if (platform.includes("Win")) return "Windows";
       if (platform.includes("Mac")) return "macOS";
@@ -88,9 +106,24 @@
       return "Unknown";
     }
 
+    // Device type detection
+    function getDeviceName() {
+      if (/iPhone/.test(ua)) return "iPhone";
+      if (/iPad/.test(ua)) return "iPad";
+      if (/Android/.test(ua)) {
+        return /Mobile/.test(ua) ? "Android Phone" : "Android Tablet";
+      }
+      if (/Macintosh/.test(ua)) return "Mac";
+      if (/Windows/.test(ua)) return "Windows PC";
+      if (/Linux/.test(ua)) return "Linux Device";
+      return "Unknown Device";
+    }
+
+    // Display the values
     document.getElementById('browser').textContent = getBrowser();
     document.getElementById('os').textContent = getOS();
     document.getElementById('screen').textContent = screenSize;
+    document.getElementById('device').textContent = getDeviceName();
   </script>
 </body>
 </html>
