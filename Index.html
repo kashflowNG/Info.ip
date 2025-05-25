@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>My IP & Device Info (Dark Mode)</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #121212;
+      color: #f1f1f1;
+      padding: 30px;
+      margin: 0;
+    }
+    .box {
+      background: #1e1e1e;
+      border-radius: 10px;
+      padding: 25px;
+      max-width: 600px;
+      margin: auto;
+      box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    }
+    h2 {
+      text-align: center;
+      color: #00bcd4;
+      margin-bottom: 20px;
+    }
+    .info {
+      margin-bottom: 12px;
+    }
+    .label {
+      font-weight: bold;
+      color: #cccccc;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #333;
+      margin: 20px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <h2>My IP & Device Info</h2>
+    <div class="info"><span class="label">IP Address:</span> <span id="ip">Loading...</span></div>
+    <div class="info"><span class="label">City:</span> <span id="city"></span></div>
+    <div class="info"><span class="label">Country:</span> <span id="country"></span></div>
+    <div class="info"><span class="label">ISP:</span> <span id="isp"></span></div>
+    <hr>
+    <div class="info"><span class="label">Browser:</span> <span id="browser"></span></div>
+    <div class="info"><span class="label">Operating System:</span> <span id="os"></span></div>
+    <div class="info"><span class="label">Screen Resolution:</span> <span id="screen"></span></div>
+  </div>
+
+  <script>
+    // IP & Location fetch
+    fetch('https://ipapi.co/json/')
+      .then(res => res.json())
+      .then(data => {
+        document.getElementById('ip').textContent = data.ip;
+        document.getElementById('city').textContent = data.city;
+        document.getElementById('country').textContent = `${data.country_name} (${data.country_code})`;
+        document.getElementById('isp').textContent = data.org;
+      })
+      .catch(() => {
+        document.getElementById('ip').textContent = 'Could not fetch';
+      });
+
+    // Device info
+    const ua = navigator.userAgent;
+    const platform = navigator.platform;
+    const screenSize = `${screen.width} x ${screen.height}`;
+
+    function getBrowser() {
+      if (ua.includes("Firefox")) return "Firefox";
+      if (ua.includes("Edg")) return "Microsoft Edge";
+      if (ua.includes("OPR") || ua.includes("Opera")) return "Opera";
+      if (ua.includes("Chrome")) return "Chrome";
+      if (ua.includes("Safari")) return "Safari";
+      return "Unknown";
+    }
+
+    function getOS() {
+      if (platform.includes("Win")) return "Windows";
+      if (platform.includes("Mac")) return "macOS";
+      if (platform.includes("Linux")) return "Linux";
+      if (/Android/.test(ua)) return "Android";
+      if (/iPhone|iPad|iPod/.test(ua)) return "iOS";
+      return "Unknown";
+    }
+
+    document.getElementById('browser').textContent = getBrowser();
+    document.getElementById('os').textContent = getOS();
+    document.getElementById('screen').textContent = screenSize;
+  </script>
+</body>
+</html>
